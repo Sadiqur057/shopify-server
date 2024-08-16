@@ -34,7 +34,29 @@ async function run() {
       return res.send(result)
     })
 
-    
+    app.post('/products', async (req, res) => {
+      const { keyword, category, brand, minPrice, maxPrice, sortByDate, sortByPrice } = req.body;
+
+      let query = {};
+
+      // Searching the keyword in the name and description fields
+      if (keyword) {
+        query.$or = [
+          { name: { $regex: keyword, $options: 'i' } },
+          { description: { $regex: keyword, $options: 'i' } }
+        ];
+      }
+
+
+
+      try {
+        // Fetch the products from the database using the query and sort
+        return res.send(result);
+      } catch (error) {
+        console.error("Error fetching products:", error);
+        return res.status(500).send("Internal Server Error");
+      }
+    });
 
 
     // Send a ping to confirm a successful connection

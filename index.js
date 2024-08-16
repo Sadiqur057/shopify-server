@@ -49,14 +49,34 @@ async function run() {
 
 
 
+      // Define the sort object
+      let sort = {};
+
+      // Sort by date if requested
+      if (sortByDate) {
+        sort.date = -1; // Sort by date descending (newest first)
+      }
+
+      // Sort by price if requested
+      if (sortByPrice) {
+        sort.price = 1; // Sort by price ascending (cheapest first)
+      }
+
       try {
         // Fetch the products from the database using the query and sort
+        const result = await productCollection.find(query).sort(sort).toArray();
         return res.send(result);
       } catch (error) {
         console.error("Error fetching products:", error);
         return res.status(500).send("Internal Server Error");
       }
     });
+
+
+
+
+
+
 
 
     // Send a ping to confirm a successful connection

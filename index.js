@@ -29,7 +29,12 @@ async function run() {
     const DB = client.db("ShopiFy")
     const productCollection = DB.collection('products')
 
+    app.get('/products', async (req, res) => {
+      const result = await productCollection.find().toArray()
+      return res.send(result)
+    })
 
+    
 
 
     // Send a ping to confirm a successful connection

@@ -47,7 +47,22 @@ async function run() {
         ];
       }
 
+      // Filter by category 
+      if (category) {
+        query.category = category;
+      }
 
+      // Filter by brand 
+      if (brand) {
+        query.brand = brand;
+      }
+
+      // Filter by price range
+      if (minPrice || maxPrice) {
+        query.price = {};
+        if (minPrice) query.price.$gte = parseFloat(minPrice);
+        if (maxPrice) query.price.$lte = parseFloat(maxPrice);
+      }
 
       // Define the sort object
       let sort = {};

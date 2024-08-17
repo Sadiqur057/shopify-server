@@ -23,19 +23,23 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
+    // await client.connect();
 
 
     const DB = client.db("ShopiFy")
     const productCollection = DB.collection('products')
 
     app.get('/products', async (req, res) => {
-      const result = await productCollection.find().toArray()
-      return res.send(result)
+      const page = parseInt(req.query.page);
+      console.log(page)
+      const products = await productCollection.find().skip(page * 12).limit(12).toArray()
+      const count = await productCollection.countDocuments();
+      return res.send({ count, products });
     })
 
     app.post('/products', async (req, res) => {
-      const { keyword, category, brand, minPrice, maxPrice, sortByDate, sortByPrice } = req.body;
+      const { keyword, category, brand, minPrice, maxPrice, sortBy} = req.body;
+      const page = parseInt(req.query.page);
 
       let query = {};
 
@@ -67,20 +71,13 @@ async function run() {
       // Define the sort object
       let sort = {};
 
-      // Sort by date if requested
-      if (sortByDate) {
-        sort.date = -1; // Sort by date descending (newest first)
-      }
-
-      // Sort by price if requested
-      if (sortByPrice) {
-        sort.price = 1; // Sort by price ascending (cheapest first)
-      }
+      
 
       try {
         // Fetch the products from the database using the query and sort
-        const result = await productCollection.find(query).sort(sort).toArray();
-        return res.send(result);
+        const products = await productCollection.find(query).sort(sort).skip(page * 12).limit(12).toArray();
+        const count = await productCollection.countDocuments(query);
+        return res.send({ count, products });
       } catch (error) {
         console.error("Error fetching products:", error);
         return res.status(500).send("Internal Server Error");
@@ -95,8 +92,8 @@ async function run() {
 
 
     // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
-    console.log("Pinged your deployment. You successfully connected to MongoDB!");
+    // await client.db("admin").command({ ping: 1 });
+    // console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
     // Ensures that the client will close when you finish/error
     // await client.close();

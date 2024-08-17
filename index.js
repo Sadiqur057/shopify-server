@@ -71,7 +71,19 @@ async function run() {
       // Define the sort object
       let sort = {};
 
-      
+      // Sort by date if requested
+      if (sortBy==="date") {
+        sort.date = -1; // Sort by date descending (newest first)
+      }
+
+      // Sort by price Low to High if requested
+      if (sortBy==="priceLow") {
+        sort.price = 1; // Sort by price ascending (cheapest first)
+      }
+      // Sort by price High to Low if requested
+      if (sortBy==="priceHigh") {
+        sort.price = -1; // Sort by price descending (expensive first)
+      }
 
       try {
         // Fetch the products from the database using the query and sort

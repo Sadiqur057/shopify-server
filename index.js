@@ -29,6 +29,11 @@ async function run() {
     const DB = client.db("ShopiFy")
     const productCollection = DB.collection('products')
 
+    app.get('/featured-products', async (req, res) => {
+      const result = await productCollection.find().sort({ ratings: -1 }).limit(12).toArray();
+      return res.send(result);
+      
+    })
     app.get('/products', async (req, res) => {
       const page = parseInt(req.query.page);
       console.log(page)
@@ -38,7 +43,7 @@ async function run() {
     })
 
     app.post('/products', async (req, res) => {
-      const { keyword, category, brand, minPrice, maxPrice, sortBy} = req.body;
+      const { keyword, category, brand, minPrice, maxPrice, sortBy } = req.body;
       const page = parseInt(req.query.page);
 
       let query = {};
@@ -72,16 +77,16 @@ async function run() {
       let sort = {};
 
       // Sort by date if requested
-      if (sortBy==="date") {
+      if (sortBy === "date") {
         sort.date = -1; // Sort by date descending (newest first)
       }
 
       // Sort by price Low to High if requested
-      if (sortBy==="priceLow") {
+      if (sortBy === "priceLow") {
         sort.price = 1; // Sort by price ascending (cheapest first)
       }
       // Sort by price High to Low if requested
-      if (sortBy==="priceHigh") {
+      if (sortBy === "priceHigh") {
         sort.price = -1; // Sort by price descending (expensive first)
       }
 
